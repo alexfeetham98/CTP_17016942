@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:4e9bbb3cf7a99038841b7720949c851335c4095504fd95045b24f7bc66ff840a
-size 243
+#pragma once
+#include <iostream>
+#include <math.h>
+#include <cstdlib>
+#include <random>
+#include <functional>
+
+inline double random_double()
+{
+	return rand() / (RAND_MAX + 1.0);
+}
+
+#define M_PI 3.14159265358979323846264338327950288
+#define kEPSILON 1e-8
