@@ -158,7 +158,10 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Colour.h" />
     <ClInclude Include="Float.h" />
+    <ClInclude Include="Hittable.h" />
+    <ClInclude Include="Hittable_List.h" />
     <ClInclude Include="Ray.h" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Vector3.h" />
   </ItemGroup>

@@ -10,7 +10,8 @@ public:
 	Vector3 origin() const { return orig; }
 	Vector3 direction() const { return dir; }
 
-	point3 point_at_param(double t) const { return orig + t * dir; }
+	// P(t) = origin + t * direction
+	point3 P(double t) const { return orig + t * dir; }
 
 public:
 	Vector3 orig;

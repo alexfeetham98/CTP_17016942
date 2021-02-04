@@ -1,37 +1,38 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
+#include "Float.h"
 #include "Colour.h"
 #include "Ray.h"
 #include "Vector3.h"
 #include "Camera.h"
-#include "Float.h"
-#include "Triangle.h"
+#include "Hittable_List.h"
+#include "Sphere.h"
 
 double hit_sphere(const point3& center, double radius, const Ray& r)
 {
 	Vector3 oc = r.origin() - center;
-	auto a = dot(r.direction(), r.direction());
-	auto b = 2.0 * dot(oc, r.direction());
-	auto c = dot(oc, oc) - radius * radius;
-	auto discriminant = b * b - 4 * a * c;
+	auto a = r.direction().length_squared();
+	auto half_b = dot(oc, r.direction());
+	auto c = oc.length_squared() - radius * radius;
+	auto discriminant = half_b * half_b - a * c;
 	if (discriminant < 0)
 	{
 		return -1;
 	}
 	else
 	{
-		return (-b - sqrt(discriminant)) / (2.0f * a);
+		return (-half_b - sqrt(discriminant)) / a;
 	}
 }
 
 bool RayTriangleIntersect(const Ray& r, const point3& v0, const point3& v1, const point3& v2)
 {
 	//compute plane's normal
-	Vector3 v0v1 = v1 - v0;
-	Vector3 v0v2 = v2 - v0;
+	Vector3 e0 = v1 - v0;
+	Vector3 e1 = v2 - v0;
 
-	Vector3 N = cross(v0v1, v0v2);
+	Vector3 N = cross(e0, e1);
 	float area2 = N.length();
 
 	//Step 1: Finding P
@@ -57,7 +58,7 @@ bool RayTriangleIntersect(const Ray& r, const point3& v0, const point3& v1, cons
 	//compute the intersection point
 	Vector3 P = r.orig + t * r.dir;
 
-	//Step 2: inside-outside test
+	//inside-outside test
 	Vector3 C; //vector perpendicular to triangle's plane
 
 	//edge0
@@ -92,33 +93,37 @@ bool RayTriangleIntersect(const Ray& r, const point3& v0, const point3& v1, cons
 
 colour ray_colour(const Ray& r)
 {
+	/*Hit_Record rec;
+	if (world.Hit(r, 0, INFINITY, rec))
+	{
+		return 0.5 * (rec.normal + colour(1, 1, 1));
+	}*/
+
 	#pragma region Spheres
 
-	/*if (hit_sphere(point3(0, 0, -1), 0.5, r))
-	{
-		return colour(1, 0, 0);
-	}*/
-
-	/*auto t = hit_sphere(point3(0, 0, -1), 0.5, r);
-	if (t > 0.0)
-	{
-		Vector3 N = unit_vector(r.point_at_param(t) - Vector3(0, 0, -1));
-		return 0.5 * colour(N.x() + 1, N.y() + 1, N.z() + 1);
-	}*/
-
-	/*auto k = hit_sphere(point3(0, -100.5, -1), 100, r);
-	if (k > 0.0)
-	{
-		Vector3 N = unit_vector(r.point_at_param(t) - Vector3(0, 0, -1));
-		return 0.5 * colour(N.x() + 1, N.y() + 1, N.z() + 1);
-	}*/
-
-	#pragma endregion
-
-	if (RayTriangleIntersect(r, point3(0, 1, -1), point3(1, 1, -1), point3(1, 2, -1)))
+	if (hit_sphere(point3(-4, 0, -1), 0.5, r) > 0.0)
 	{
 		return colour(1, 0, 0);
 	}
+
+	auto l = hit_sphere(point3(0, 0, -1), 0.5, r);
+	if (l > 0.0)
+	{
+		Vector3 N = unit_vector(r.P(l) - Vector3(0, 0, -1));
+		return 0.5 * colour(N.x() + 1, N.y() + 1, N.z() + 1);
+	}
+
+	if (hit_sphere(point3(0, -100.5, -1), 100, r) > 0.0)
+	{
+		return colour(0.2, 0.8, 0.4);
+	}
+
+	#pragma endregion
+
+	/*if (RayTriangleIntersect(r, point3(0, 1, -1), point3(1, 1, -1), point3(1, 2, -1)))
+	{
+		return colour(1, 0, 0);
+	}*/
 
 	Vector3 unit_direction = unit_vector(r.direction());
 	auto t = 0.5 * (unit_direction.y() + 1.0);
@@ -142,29 +147,15 @@ int main()
 	sf::Event event;
 	sf::Image image;
 	
-	const int nx = 800;
-	const int ny = 600;
-	const int ns = 10;
+	const int nx = 800; //image width
+	const int ny = 600; //image height
+	const int ns = 10;	//number of samples per pixel (anti-aliasing)
 
 	image.create(nx, ny);
 
-
-	
-	//point3 v0(10, 10, -1), v1(30, 10, -1), v2(20, 30, -1);
-	//point3 v0(200, 200, -1), v1(400, 200, -1), v2(300, 600, -1);
-
-
-
-	//Vector3 A = v1 - v0; //edge 0
-	//Vector3 B = v2 - v0; //edge 1
-	//Vector3 C = cross(A, B); //this is the triangle's normal
-	//normalize(A, B, C);
-
-	
-
-	// Camera
-	Vector3 lookfrom(13, 2, 3);
-	Vector3 lookat(0, 0, 0);
+	//Camera
+	point3 lookfrom(13, 2, 3);
+	point3 lookat(0, 0, 0);
 	float dist_to_focus = 10;
 	float aperture = 0.0;
 	Camera cam(lookfrom, lookat, Vector3(0, 1, 0), 20, float(nx) / float(ny), aperture, dist_to_focus, 0.0, 1.0);
@@ -174,13 +165,13 @@ int main()
 	{
 		for (int i = 0; i < nx; i++)
 		{
-			Vector3 col(0, 0, 0);
+			colour col(0, 0, 0);
 			for (int s = 0; s < ns; s++)
 			{
-				float u = float(i + random_double()) / float(nx);
-				float v = float(j + random_double()) / float(ny);
+				float u = float(i  / float(nx));
+				float v = float(j  / float(ny));
 				Ray r = cam.get_ray(u, v);
-				Vector3 p = r.point_at_param(2.0);
+				Vector3 p = r.P(2.0);
 				col += ray_colour(r);
 			}
 			col /= float(ns);

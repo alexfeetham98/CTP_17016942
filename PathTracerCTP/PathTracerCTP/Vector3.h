@@ -59,6 +59,7 @@ using colour = Vector3;		// RGB Colour
 
 // Vector3 Utility Functions
 
+	#pragma region Operators
 inline std::ostream& operator<<(std::ostream& out, const Vector3& v)
 {
 	return out << v.e[0] << ' ' << v.e[1] << ' ' << v.e[2];
@@ -93,6 +94,13 @@ inline Vector3 operator/(Vector3 v, double t)
 {
 	return (1 / t) * v;
 }
+inline double clamp(double x, double min, double max)
+{
+	if (x < min) return min;
+	if (x > max) return max;
+	return x;
+}
+#pragma endregion
 
 inline double dot(const Vector3& u, const Vector3& v)
 {
@@ -111,11 +119,4 @@ inline Vector3 cross(const Vector3& u, const Vector3& v)
 inline Vector3 unit_vector(Vector3 v)
 {
 	return v / v.length();
-}
-
-inline double clamp(double x, double min, double max)
-{
-	if (x < min) return min;
-	if (x > max) return max;
-	return x;
 }
