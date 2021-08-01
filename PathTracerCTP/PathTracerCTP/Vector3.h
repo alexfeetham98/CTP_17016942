@@ -18,7 +18,7 @@ public:
 	double operator[](int i) const { return e[i]; }
 	double& operator[](int i) { return e[i]; }
 
-	Vector3& operator+=(const Vector3 &v)
+	Vector3& operator+=(const Vector3& v)
 	{
 		e[0] += v.e[0];
 		e[1] += v.e[1];
@@ -59,18 +59,18 @@ using colour = Vector3;		// RGB Colour
 
 // Vector3 Utility Functions
 
-	#pragma region Operators
+#pragma region Operators
 inline std::ostream& operator<<(std::ostream& out, const Vector3& v)
 {
 	return out << v.e[0] << ' ' << v.e[1] << ' ' << v.e[2];
 }
 
-inline Vector3 operator+(const Vector3 &u, const Vector3 &v)
+inline Vector3 operator+(const Vector3& u, const Vector3& v)
 {
 	return Vector3(u.e[0] + v.e[0], u.e[1] + v.e[1], u.e[2] + v.e[2]);
 }
 
-inline Vector3 operator-(const Vector3 &u, const Vector3 &v)
+inline Vector3 operator-(const Vector3& u, const Vector3& v)
 {
 	return Vector3(u.e[0] - v.e[0], u.e[1] - v.e[1], u.e[2] - v.e[2]);
 }
@@ -105,15 +105,15 @@ inline double clamp(double x, double min, double max)
 inline double dot(const Vector3& u, const Vector3& v)
 {
 	return u.e[0] * v.e[0]
-		 + u.e[1] * v.e[1]
-	     + u.e[2] * v.e[2];
+		+ u.e[1] * v.e[1]
+		+ u.e[2] * v.e[2];
 }
 
 inline Vector3 cross(const Vector3& u, const Vector3& v)
 {
 	return Vector3(u.e[1] * v.e[2] - u.e[2] * v.e[1],
-				   u.e[2] * v.e[0] - u.e[0] * v.e[2],
-				   u.e[0] * v.e[1] - u.e[1] * v.e[0]);
+		u.e[2] * v.e[0] - u.e[0] * v.e[2],
+		u.e[0] * v.e[1] - u.e[1] * v.e[0]);
 }
 
 inline Vector3 unit_vector(Vector3 v)
