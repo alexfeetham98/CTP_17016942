@@ -53,5 +53,8 @@
     <ClInclude Include="Hittable_List.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RayTriangleIntercept.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

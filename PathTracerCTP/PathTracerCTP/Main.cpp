@@ -7,11 +7,9 @@
 #include "Vector3.h"
 #include "Camera.h"
 #include "Triangle.h"
+#include "RayTriangleIntercept.h"
 #include "Hittable_List.h"
 #include "Sphere.h"
-
-
-
 
 //double hit_sphere(const point3& center, double radius, const Ray& r)
 //{
@@ -69,7 +67,13 @@ colour ray_colour(const Ray& r, const Triangle& tri)
 		return 0.5 * (rec.normal + colour(1, 1, 1));
 	}*/
 
-	if (tri.RTI(r))
+	/*if (tri.RTI(r))
+	{
+		return colour(tri.col);
+	}*/
+
+
+	if (RayTriangleIntersect(r, tri.v0, tri.v1, tri.v2))
 	{
 		return colour(tri.col);
 	}
@@ -112,9 +116,9 @@ int main()
 	image.create(nx, ny);
 
 	//Camera
-	point3 lookfrom(0, 0, -50);
+	point3 lookfrom(0, 0, -75);
 	point3 lookat(0, 0, 0);
-	float dist_to_focus = 100;
+	float dist_to_focus = 150;
 	float aperture = 0.0;
 	Camera cam(lookfrom, lookat, Vector3(0, 1, 0), 20, float(nx) / float(ny), aperture, dist_to_focus, 0.0, 1.0);
 
@@ -125,32 +129,39 @@ int main()
 
 
 	//Front
-	Triangle t1(point3(-10, -10, 10), point3(10, 10, 10), point3(-10, 10, 10), colour(1,1,1));
-	Triangle t2(point3(-10, -10, 10), point3(10, -10, 10), point3(10, 10, 10), colour(1,1,1));
+	Triangle t1(point3(-10, -10, 10), point3(10, 10, 10), point3(-10, 10, 10), colour(1, 1, 1));
+	Triangle t2(point3(-10, -10, 10), point3(10, -10, 10), point3(10, 10, 10), colour(1, 1, 1));
 	//Back
-	Triangle t3(point3(-10, -10, 30), point3(10, 10, 50), point3(-10, 10, 30), colour(1,1,1));
-	Triangle t4(point3(-10, -10, 30), point3(10, -10, 30), point3(10, 10, 30), colour(1,1,1));
+	Triangle t3(point3(-10, -10, 30), point3(10, 10, 50), point3(-10, 10, 30), colour(1, 1, 1));
+	Triangle t4(point3(-10, -10, 30), point3(10, -10, 30), point3(10, 10, 30), colour(1, 1, 1));
 	//Right
-	Triangle t5(point3(10, -10, 10), point3(10, 10, 30), point3(10, 10, 10), colour(1,0,0));
-	Triangle t6(point3(10, -10, 10), point3(10, -10, 30), point3(10, 10, 30), colour(1,0,0));
+	Triangle t5(point3(10, -10, 10), point3(10, 10, 30), point3(10, 10, 10), colour(1, 0, 0));
+	Triangle t6(point3(10, -10, 10), point3(10, -10, 30), point3(10, 10, 30), colour(1, 0, 0));
+
+	Triangle t13(point3(10, -10, 10), point3(5, 10, 30), point3(10, 10, 10), colour(1, 0, 0));
+	Triangle t14(point3(-10, -10, 30), point3(-5, 10, 30), point3(-10, 10, 10), colour(0, 1, 0));
+
 	//Left
-	Triangle t7(point3(-10, -10, 30), point3(-10, 10, 30), point3(-10, 10, 10), colour(0,1,0));
-	Triangle t8(point3(-10, -10, 30), point3(-10, 10, 10), point3(-10, -10, 10), colour(0,1,0));
+	Triangle t7(point3(-10, -10, 30), point3(-10, 10, 30), point3(-10, 10, 10), colour(0, 1, 0));
+	Triangle t8(point3(-10, -10, 30), point3(-10, 10, 10), point3(-10, -10, 10), colour(0, 1, 0));
 	//Bottom
-	Triangle t9(point3(-10, -10, 10), point3(10, -10, 30), point3(-10, -10, 30), colour(1,1,1));
-	Triangle t10(point3(-10, -10, 10), point3(10, -10, 10), point3(10, -10, 30), colour(1,1,1));
+	Triangle t9(point3(-10, -10, 10), point3(10, -10, 30), point3(-10, -10, 30), colour(1, 1, 1));
+	Triangle t10(point3(-10, -10, 10), point3(10, -10, 10), point3(10, -10, 30), colour(1, 1, 1));
 	//Top
-	Triangle t11(point3(-10, 10, 10), point3(10, 10, 30), point3(-10, 10, 30), colour(1,1,1));
-	Triangle t12(point3(-10, 10, 10), point3(10, 10, 10), point3(10, 10, 30), colour(1,1,1));
-	
+	Triangle t11(point3(-10, 10, 10), point3(10, 10, 30), point3(-10, 10, 30), colour(1, 1, 1));
+	Triangle t12(point3(-10, 10, 10), point3(10, 10, 10), point3(10, 10, 30), colour(1, 1, 1));
 
-	point3 v0 = point3(0, 0, 5); //right
-	point3 v1 = point3(0.5, 0.5, 5); //top
-	point3 v2 = point3(1, 0, 5); //left
-	Triangle tri(v0, v1, v2, colour(1,0,0));
+	//Pyramid
+	Triangle t21(point3(0, 0, 10), point3(0, 10, 20), point3(-10, 0, 20), colour(1, 1, 1));
+	Triangle t22(point3(0, 0, 10), point3(10, 0, 20), point3(0, 10, 20), colour(1, 0, 0));
 
-	Triangle tris[] = {t3, t4, t5, t6, t7, t8, t9, t10, t11, t12};
-	int o = sizeof(tris)/sizeof(tris[0]);
+	point3 v0 = point3(-10, -10, 5);
+	point3 v1 = point3(10, -10, 5);
+	point3 v2 = point3(0, 10, 5);
+	Triangle tri(v0, v1, v2, colour(1, 1, 1));
+
+	Triangle tris[] = { t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 };
+	int o = sizeof(tris) / sizeof(tris[0]);
 
 	//Render
 	for (int j = ny - 1; j >= 0; j--)
@@ -161,15 +172,16 @@ int main()
 			for (int s = 0; s < ns; s++)
 			{
 				float t;
-				float u = float(i  / float(nx));
-				float v = float(j  / float(ny));
+				float u = float(i / float(nx));
+				float v = float(j / float(ny));
 				Ray r = cam.get_ray(u, v);
-				//Vector3 p = r.P(10.0);
+				Vector3 p = r.P(10.0);
+				//col += ray_colour(r, tri);
 				for (int a = 0; a < o; a++)
 				{
 					col += ray_colour(r, tris[a]);
 				}
-				
+
 			}
 			//col /= float(ns);
 			//col = Vector3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
@@ -185,7 +197,7 @@ int main()
 
 	std::cerr << "\Done.\n";
 
-	image.flipVertically();
+	//image.flipVertically();
 	while (window.isOpen())
 	{
 		window.clear();

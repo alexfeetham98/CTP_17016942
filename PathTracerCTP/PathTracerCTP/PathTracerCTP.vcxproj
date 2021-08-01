@@ -163,6 +163,7 @@
     <ClInclude Include="Hittable.h" />
     <ClInclude Include="Hittable_List.h" />
     <ClInclude Include="Ray.h" />
+    <ClInclude Include="RayTriangleIntercept.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Vector3.h" />
