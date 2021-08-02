@@ -1,7 +1,7 @@
 #pragma once
 #include "Vector3.h"
 #include "Ray.h"
-#include "Float.h"
+#include "Utilities.h"
 
 
 bool RayTriangleIntersect(const Ray& r, const point3& v0, const point3& v1, const point3& v2)

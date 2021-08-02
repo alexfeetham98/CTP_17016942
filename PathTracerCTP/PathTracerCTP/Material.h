@@ -1,7 +1,7 @@
 #pragma once
 #include "Ray.h"
 #include "Hittable.h"
-#include "Float.h"
+#include "Utilities.h"
 
 struct Hit_Record;
 
@@ -40,7 +40,7 @@ public:
 		attenuation = albedo;
 		return true;*/
 		Vector3 target = rec.point + rec.normal + random_in_unit_sphere();
-		scattered = Ray(rec.point, target - rec.point);
+		scattered = Ray(rec.point, target - rec.point, r_in.time());
 		attenuation = albedo;
 		return true;
 	}
@@ -56,7 +56,7 @@ public:
 	virtual bool scatter(const Ray& r_in, const Hit_Record& rec, colour& attenuation, Ray& scattered) const override
 	{
 		Vector3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
-		scattered = Ray(rec.point, reflected + fuzz * random_in_unit_sphere());
+		scattered = Ray(rec.point, reflected + fuzz * random_in_unit_sphere(), r_in.time());
 		attenuation = albedo;
 		return (dot(scattered.direction(), rec.normal) > 0);
 	}
@@ -91,7 +91,7 @@ public:
 			direction = refract(unit_direction, rec.normal, refraction_ratio);
 		}
 
-		scattered = Ray(rec.point, direction);
+		scattered = Ray(rec.point, direction, r_in.time());
 		return true;
 	}
 

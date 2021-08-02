@@ -1,6 +1,6 @@
 #pragma once
 #include "Hittable.h"
-
+#include "AABB.h"
 #include <memory>
 #include <vector>
 
@@ -18,6 +18,7 @@ public:
     void add(shared_ptr<Hittable> object) { objects.push_back(object); }
 
     virtual bool Hit(const Ray& r, double t_min, double t_max, Hit_Record& rec) const override;
+    virtual bool BoundingBox(double time0, double time1, AABB& output_box) const override;
     //virtual bool RTI(const Ray& r, double t_min, double t_max, Hit_Record& rec) const override;
 
 public:
@@ -40,6 +41,22 @@ bool Hittable_List::Hit(const Ray& r, double t_min, double t_max, Hit_Record& re
         }
     }
     return hit_anything;
+}
+
+inline bool Hittable_List::BoundingBox(double time0, double time1, AABB& output_box) const
+{
+    if (objects.empty()) return false;
+
+    AABB temp_box;
+    bool first_box = true;
+
+    for (const auto& object : objects) {
+        if (!object->BoundingBox(time0, time1, temp_box)) return false;
+        output_box = first_box ? temp_box : SurroundingBox(output_box, temp_box);
+        first_box = false;
+    }
+
+    return true;
 }
 
 //bool Hittable_List::RTI(const Ray& r, double t_min, double t_max, Hit_Record& rec) const

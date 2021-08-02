@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
-#include "Float.h"
+#include "Utilities.h"
 #include "Colour.h"
 #include "Ray.h"
 #include "Vector3.h"
@@ -95,6 +95,8 @@ Vector3 normalize(Vector3 &A, Vector3 &B, Vector3 &C)
 
 int main()
 {
+	Timer timer;
+	timer.Start();
 	sf::RenderWindow window(sf::VideoMode(800, 600), "Path Tracer");
 
 	sf::Event event;
@@ -178,11 +180,6 @@ int main()
 				Ray r = cam.get_ray(u, v);
 				col += ray_colour(r, world, sceneDepth);
 
-				/*for (int a = 0; a < o; a++)
-				{
-					col += ray_colour(r, tris[a]);
-				}*/
-
 			}
 			col /= float(ns);
 			col = Vector3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
@@ -197,10 +194,8 @@ int main()
 		}
 	}
 
-
-
-
 	std::cerr << "\Done.\n";
+	std::cerr << "\Time Elapsed: " << timer.GetDuration();
 
 	image.flipVertically();
 	while (window.isOpen())

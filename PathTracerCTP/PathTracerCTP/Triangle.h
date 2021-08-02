@@ -1,7 +1,7 @@
 #pragma once
 #include "Vector3.h"
 #include "Ray.h"
-#include "Float.h"
+#include "Utilities.h"
 
 class Triangle
 {
