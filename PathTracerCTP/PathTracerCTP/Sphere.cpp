@@ -23,6 +23,6 @@ bool Sphere::Hit(const Ray& r, double t_min, double t_max, Hit_Record& rec) cons
     rec.point = r.P(rec.t);
     Vector3 outward_normal = (rec.point - center) / radius;
     rec.set_face_normal(r, outward_normal);
-
+    rec.mat_ptr = mat_ptr;
     return true;
 }

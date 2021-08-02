@@ -2,10 +2,13 @@
 #include <memory>
 #include "Ray.h"
 
+class Material;
+
 struct Hit_Record
 {
     point3 point;
     Vector3 normal;
+    shared_ptr<Material>mat_ptr;
     double t;
     bool front_face;
 
@@ -20,5 +23,4 @@ class Hittable
 {
 public:
     virtual bool Hit(const Ray& r, double t_min, double t_max, Hit_Record& rec) const = 0;
-    //virtual bool RTI(const Ray& r, double t_min, double t_max, Hit_Record& rec) const = 0;
 };
