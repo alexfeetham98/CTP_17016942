@@ -1,12 +1,16 @@
 #pragma once
 #include <memory>
 #include "Ray.h"
+#include "AABB.h"
+
+class Material;
 
 struct Hit_Record
 {
     point3 point;
     Vector3 normal;
-    double t;
+    shared_ptr<Material>mat_ptr;
+    double t, u, v;
     bool front_face;
 
     inline void set_face_normal(const Ray& r, const Vector3& outward_normal)
@@ -20,5 +24,5 @@ class Hittable
 {
 public:
     virtual bool Hit(const Ray& r, double t_min, double t_max, Hit_Record& rec) const = 0;
-    //virtual bool RTI(const Ray& r, double t_min, double t_max, Hit_Record& rec) const = 0;
+    virtual bool BoundingBox(double time0, double time1, AABB& output_box) const = 0;
 };

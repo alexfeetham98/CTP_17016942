@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <iostream>
+#include "Utilities.h"
 
 using std::sqrt;
 
@@ -13,7 +14,11 @@ public:
 	double x() const { return e[0]; }
 	double y() const { return e[1]; }
 	double z() const { return e[2]; }
+	inline float r() const { return e[0]; }
+	inline float g() const { return e[1]; }
+	inline float b() const { return e[2]; }
 
+	inline const Vector3& operator+() const { return *this; }
 	Vector3 operator-() const { return Vector3(-e[0], -e[1], -e[2]); }
 	double operator[](int i) const { return e[i]; }
 	double& operator[](int i) { return e[i]; }
@@ -49,9 +54,30 @@ public:
 		return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
 	}
 
+	inline static Vector3 random()
+	{
+		return Vector3(random_double(), random_double(), random_double());
+	}
+
+	inline static Vector3 random(double min, double max)
+	{
+		return Vector3(random_double(min, max), random_double(min, max), random_double(min, max));
+	}
+
+	bool near_zero() const
+	{
+		// Return true if the vector is close to zero in all dimensions.
+		const auto s = 1e-8;
+		return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+	}
+
 public:
 	double e[3];
 };
+
+
+
+
 
 using point3 = Vector3;		// 3D Point
 using colour = Vector3;		// RGB Colour
@@ -94,12 +120,6 @@ inline Vector3 operator/(Vector3 v, double t)
 {
 	return (1 / t) * v;
 }
-inline double clamp(double x, double min, double max)
-{
-	if (x < min) return min;
-	if (x > max) return max;
-	return x;
-}
 #pragma endregion
 
 inline double dot(const Vector3& u, const Vector3& v)
@@ -119,4 +139,19 @@ inline Vector3 cross(const Vector3& u, const Vector3& v)
 inline Vector3 unit_vector(Vector3 v)
 {
 	return v / v.length();
+}
+
+inline Vector3 random_in_unit_sphere()
+{
+	while (true)
+	{
+		auto p = Vector3::random(-1,1);
+		if (p.length_squared() >= 1) continue;
+		return p;
+	}
+}
+
+inline Vector3 random_unit_vector()
+{
+	return unit_vector(random_in_unit_sphere());
 }

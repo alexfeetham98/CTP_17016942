@@ -1,5 +1,5 @@
 #include "Ray.h"
-#include "Float.h"
+#include "Utilities.h"
 
 Vector3 random_in_unit_disk()
 {
@@ -39,7 +39,7 @@ public:
         Vector3 rd = lens_radius * random_in_unit_disk();
         Vector3 offset = u * rd.x() + v * rd.y();
         float time = time0 + random_double() * (time1 - time0);
-        return Ray(origin + offset, lower_left_corner + s * horizontal + t * vertical - origin - offset);
+        return Ray(origin + offset, lower_left_corner + s * horizontal + t * vertical - origin - offset, random_double(time0, time1));
     }
 
     Vector3 origin;

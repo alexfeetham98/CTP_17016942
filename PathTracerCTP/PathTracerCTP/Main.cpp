@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
-#include "Float.h"
+#include "Utilities.h"
 #include "Colour.h"
 #include "Ray.h"
 #include "Vector3.h"
@@ -9,82 +9,43 @@
 #include "Triangle.h"
 #include "Hittable_List.h"
 #include "Sphere.h"
+#include "Material.h"
+#include "AABB.h"
+#include "BVH.h"
+#include "AArect.h"
+#include "Box.h"
 
-
-
-
-//double hit_sphere(const point3& center, double radius, const Ray& r)
-//{
-//	Vector3 oc = r.origin() - center;
-//	auto a = r.direction().length_squared();
-//	auto half_b = dot(oc, r.direction());
-//	auto c = oc.length_squared() - radius * radius;
-//	auto discriminant = half_b * half_b - a * c;
-//	if (discriminant < 0)
-//	{
-//		return -1;
-//	}
-//	else
-//	{
-//		return (-half_b - sqrt(discriminant)) / a;
-//	}
-//}
-
-
-colour ray_colour(const Ray& r, const Triangle& tri)
+colour ray_colour(const Ray& r, const colour& background, const Hittable& world, /*const Triangle& tri,*/ int depth)
 {
-#pragma region Spheres
-
-	/*auto l = hit_sphere(point3(0, 0, -1), 0.5, r);
-	if (l > 0.0)
-	{
-		Vector3 N = unit_vector(r.P(l) - Vector3(0, 0, -1));
-		return 0.5 * colour(N.x() + 1, N.y() + 1, N.z() + 1);
-	}*/
-
-	/*if (hit_sphere(point3(0, 0, -1), 0.1, r) > 0.0)
-	{
-		return colour(1, 0, 0);
-	}
-
-	if (hit_sphere(point3(1, 1, -1), 0.1, r) > 0.0)
-	{
-		return colour(0, 1, 0);
-	}
-
-	if (hit_sphere(point3(1, 0, -1), 0.1, r) > 0.0)
-	{
-		return colour(0, 0, 1);
-	}*/
-
+#pragma region RTI
+	//if (tri.RTI(r))
+	//{
+	//	return colour(tri.col);
+	//}
 #pragma endregion
 
-	//if (RayTriangleIntersect(r, /*v0, v1, v2,*/ triangle))
-	//{
-	//	return colour(1, 0, 0);
-	//}
-	/*Hit_Record rec;
-	if (world.Hit(r, 0, INFINITY, rec))
-	{
-		return 0.5 * (rec.normal + colour(1, 1, 1));
-	}*/
-
-	if (tri.RTI(r))
-	{
-		return colour(tri.col);
-	}
-	else
+	if (depth <= 0)
 	{
 		return colour(0, 0, 0);
 	}
 
-
-	/*else
+	Hit_Record rec;
+	// If the ray hits nothing, return the background color.
+	if (!world.Hit(r, 0.001, infinity, rec))
 	{
-		Vector3 unit_direction = unit_vector(r.direction());
-		auto t = 0.5 * (unit_direction.y() + 1.0);
-		return (1.0 - t) * colour(1.0, 1.0, 1.0) + t * colour(0.5, 0.7, 1.0);
-	}*/
+		return background;
+	}	
+
+	Ray scattered;
+	colour attenuation;
+	colour emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.point);
+
+	if (!rec.mat_ptr->scatter(r, rec, attenuation, scattered))
+	{
+		return emitted;
+	}
+
+	return emitted + attenuation * ray_colour(scattered, background, world, depth - 1);
 }
 
 Vector3 normalize(Vector3 &A, Vector3 &B, Vector3 &C)
@@ -97,60 +58,138 @@ Vector3 normalize(Vector3 &A, Vector3 &B, Vector3 &C)
 	return C;
 }
 
+Hittable_List scene()
+{
+	//World
+	Hittable_List world;
+	auto material_ground = make_shared<Lambertian>(colour(.73, .73, .73));
+	auto material_center = make_shared<Lambertian>(colour(0.1, 0.2, 0.5));
+	auto material_left = make_shared<Dielectric>(1.5);
+	auto material_right = make_shared<Metal>(colour(0.8, 0.6, 0.2), 0.0);
+
+	auto checker = make_shared<checker_texture>(colour(0.2, 0.3, 0.1), colour(0.9, 0.9, 0.9));
+	world.add(make_shared<Sphere>(point3(0, -100.5, 0), 100, material_ground));
+
+	world.add(make_shared<Sphere>(point3(0.0, 0.0, -1.0), 0.5, material_center));
+	world.add(make_shared<Sphere>(point3(-1.0, 0.0, -1.0), 0.5, material_left));
+	world.add(make_shared<Sphere>(point3(-1.0, 0.0, -1.0), -0.49, material_left));
+	world.add(make_shared<Sphere>(point3(1.0, 0.0, -1.0), 0.5, material_right));
+
+	return world;
+}
+
+Hittable_List two_spheres()
+{
+	Hittable_List objects;
+
+	auto checker = make_shared<checker_texture>(colour(0.2, 0.3, 0.1), colour(0.9, 0.9, 0.9));
+
+	objects.add(make_shared<Sphere>(point3(0, -10, 0), 10, make_shared<Lambertian>(checker)));
+	objects.add(make_shared<Sphere>(point3(0, 10, 0), 10, make_shared<Lambertian>(checker)));
+
+	return objects;
+}
+
+Hittable_List two_perlin_spheres()
+{
+	Hittable_List objects;
+
+	auto pertext = make_shared<Noise_Texture>(4);
+	objects.add(make_shared<Sphere>(point3(0, -1000, 0), 1000, make_shared<Lambertian>(pertext)));
+	objects.add(make_shared<Sphere>(point3(0, 2, 0), 2, make_shared<Lambertian>(pertext)));
+
+	return objects;
+}
+
+Hittable_List simple_light()
+{
+	Hittable_List objects;
+
+	auto pertext = make_shared<Noise_Texture>(4);
+	objects.add(make_shared<Sphere>(point3(0, -1000, 0), 1000, make_shared<Lambertian>(pertext)));
+	objects.add(make_shared<Sphere>(point3(0, 2, 0), 2, make_shared<Lambertian>(pertext)));
+
+	auto difflight = make_shared<Diffuse_Light>(colour(4, 4, 4));
+	objects.add(make_shared<xy_rect>(3, 5, 1, 3, -2, difflight));
+
+	return objects;
+}
+
+Hittable_List cornell_box()
+{
+	Hittable_List objects;
+
+	auto red = make_shared<Lambertian>(colour(.65, .05, .05));
+	auto white = make_shared<Lambertian>(colour(.73, .73, .73));
+	auto green = make_shared<Lambertian>(colour(.12, .45, .15));
+	auto light = make_shared<Diffuse_Light>(colour(15, 15, 15));
+	auto metal = make_shared<Metal>(colour(1, 1, 1), 0.0);
+
+	objects.add(make_shared<yz_rect>(0, 555, 0, 555, 555, green));
+	objects.add(make_shared<yz_rect>(0, 555, 0, 555, 0, red));
+	objects.add(make_shared<xz_rect>(213, 343, 227, 332, 554, light));
+	objects.add(make_shared<xz_rect>(0, 555, 0, 555, 0, white));
+	objects.add(make_shared<xz_rect>(0, 555, 0, 555, 555, white));
+	objects.add(make_shared<xy_rect>(0, 555, 0, 555, 555, white));
+
+	objects.add(make_shared<Box>(point3(130, 0, 65), point3(295, 165, 230), white));
+	objects.add(make_shared<Box>(point3(265, 0, 295), point3(430, 330, 460), white));
+
+	return objects;
+}
 
 int main()
 {
+	Timer timer;
+	timer.Start();
 	sf::RenderWindow window(sf::VideoMode(800, 600), "Path Tracer");
 
 	sf::Event event;
 	sf::Image image;
 
-	const int nx = 800; //image width
-	const int ny = 600; //image height
-	const int ns = 1;	//number of samples per pixel (anti-aliasing)
+	const int nx = 800;		//image width
+	const int ny = 600;		//image height
+	const int ns = 10000;	//number of samples per pixel (anti-aliasing)
+	const int sceneDepth = 50;
 
 	image.create(nx, ny);
 
+	Hittable_List world = cornell_box();
+	colour background(0, 0, 0);
+
 	//Camera
-	point3 lookfrom(0, 0, -50);
-	point3 lookat(0, 0, 0);
-	float dist_to_focus = 100;
+	point3 lookfrom(280, 280, -800);
+	point3 lookat(280, 280, 0);
+	float dist_to_focus = 10;
 	float aperture = 0.0;
-	Camera cam(lookfrom, lookat, Vector3(0, 1, 0), 20, float(nx) / float(ny), aperture, dist_to_focus, 0.0, 1.0);
+	Camera cam(lookfrom, lookat, Vector3(0, 1, 0), 40, float(nx) / float(ny), aperture, dist_to_focus, 0.0, 1.0);
 
-	//World
-	Hittable_List world;
-	world.add(make_shared<Sphere>(point3(0, 0, 10), 0.5));
-	//world.add(make_shared<Triangle>(point3(0, 0, 5), point3(0.5, 0.5, 5), point3(1, 0, 5)));
-
-
+#pragma region Triangles
 	//Front
-	Triangle t1(point3(-10, -10, 10), point3(10, 10, 10), point3(-10, 10, 10), colour(1,1,1));
-	Triangle t2(point3(-10, -10, 10), point3(10, -10, 10), point3(10, 10, 10), colour(1,1,1));
+	Triangle t1(point3(-10, -10, 10), point3(10, 10, 10), point3(-10, 10, 10), colour(1, 1, 1));
+	Triangle t2(point3(-10, -10, 10), point3(10, -10, 10), point3(10, 10, 10), colour(1, 1, 1));
 	//Back
-	Triangle t3(point3(-10, -10, 30), point3(10, 10, 50), point3(-10, 10, 30), colour(1,1,1));
-	Triangle t4(point3(-10, -10, 30), point3(10, -10, 30), point3(10, 10, 30), colour(1,1,1));
+	Triangle t3(point3(-10, -10, 30), point3(10, 10, 50), point3(-10, 10, 30), colour(1, 1, 1));
+	Triangle t4(point3(-10, -10, 30), point3(10, -10, 30), point3(10, 10, 30), colour(1, 1, 1));
 	//Right
-	Triangle t5(point3(10, -10, 10), point3(10, 10, 30), point3(10, 10, 10), colour(1,0,0));
-	Triangle t6(point3(10, -10, 10), point3(10, -10, 30), point3(10, 10, 30), colour(1,0,0));
+	Triangle t5(point3(10, -10, 10), point3(10, 10, 30), point3(10, 10, 10), colour(1, 0, 0));
+	Triangle t6(point3(10, -10, 10), point3(10, -10, 30), point3(10, 10, 30), colour(1, 0, 0));
 	//Left
-	Triangle t7(point3(-10, -10, 30), point3(-10, 10, 30), point3(-10, 10, 10), colour(0,1,0));
-	Triangle t8(point3(-10, -10, 30), point3(-10, 10, 10), point3(-10, -10, 10), colour(0,1,0));
+	Triangle t7(point3(-10, -10, 30), point3(-10, 10, 30), point3(-10, 10, 10), colour(0, 1, 0));
+	Triangle t8(point3(-10, -10, 30), point3(-10, 10, 10), point3(-10, -10, 10), colour(0, 1, 0));
 	//Bottom
-	Triangle t9(point3(-10, -10, 10), point3(10, -10, 30), point3(-10, -10, 30), colour(1,1,1));
-	Triangle t10(point3(-10, -10, 10), point3(10, -10, 10), point3(10, -10, 30), colour(1,1,1));
+	Triangle t9(point3(-10, -10, 10), point3(10, -10, 30), point3(-10, -10, 30), colour(1, 1, 1));
+	Triangle t10(point3(-10, -10, 10), point3(10, -10, 10), point3(10, -10, 30), colour(1, 1, 1));
 	//Top
-	Triangle t11(point3(-10, 10, 10), point3(10, 10, 30), point3(-10, 10, 30), colour(1,1,1));
-	Triangle t12(point3(-10, 10, 10), point3(10, 10, 10), point3(10, 10, 30), colour(1,1,1));
-	
+	Triangle t11(point3(-10, 10, 10), point3(10, 10, 30), point3(-10, 10, 30), colour(1, 1, 1));
+	Triangle t12(point3(-10, 10, 10), point3(10, 10, 10), point3(10, 10, 30), colour(1, 1, 1));
 
-	point3 v0 = point3(0, 0, 5); //right
-	point3 v1 = point3(0.5, 0.5, 5); //top
-	point3 v2 = point3(1, 0, 5); //left
-	Triangle tri(v0, v1, v2, colour(1,0,0));
+	Triangle tris[] = { t3, t4, t5, t6, t7, t8, t9, t10, t11, t12 };
 
-	Triangle tris[] = {t3, t4, t5, t6, t7, t8, t9, t10, t11, t12};
-	int o = sizeof(tris)/sizeof(tris[0]);
+	int o = sizeof(tris) / sizeof(tris[0]);
+#pragma endregion
+
+	std::cerr << "\Number of Samples: " << ns << "\n";
 
 	//Render
 	for (int j = ny - 1; j >= 0; j--)
@@ -160,30 +199,27 @@ int main()
 			colour col(0, 0, 0);
 			for (int s = 0; s < ns; s++)
 			{
-				float t;
-				float u = float(i  / float(nx));
-				float v = float(j  / float(ny));
+				float u = float(i / float(nx));
+				float v = float(j / float(ny));
 				Ray r = cam.get_ray(u, v);
-				//Vector3 p = r.P(10.0);
-				for (int a = 0; a < o; a++)
-				{
-					col += ray_colour(r, tris[a]);
-				}
-				
+				col += ray_colour(r, background, world, sceneDepth);
 			}
-			//col /= float(ns);
-			//col = Vector3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
+			col /= float(ns);
+			col = Vector3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
+			write_color(std::cout, col, ns, timer);
 			int ir = static_cast<int>(255.99 * col[0]);
 			int ig = static_cast<int>(255.99 * col[1]);
 			int ib = static_cast<int>(255.99 * col[2]);
 
-			std::cout << ir << " " << ig << " " << ib << "\n";
+			//std::cout << ir << " " << ig << " " << ib << "\n";
 
 			image.setPixel(i, j, sf::Color(ir, ig, ib));
 		}
 	}
 
 	std::cerr << "\Done.\n";
+	std::cerr << "\Time Elapsed: " << timer.GetDuration() << "\n";
+	std::cerr << "\Number of Samples: " << ns << "\n";
 
 	image.flipVertically();
 	while (window.isOpen())

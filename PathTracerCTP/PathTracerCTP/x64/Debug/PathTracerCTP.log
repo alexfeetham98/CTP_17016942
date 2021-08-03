@@ -1,9 +1,23 @@
 ﻿  Main.cpp
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Vector3.h(17,37): warning C4244: 'return': conversion from 'const double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Vector3.h(18,37): warning C4244: 'return': conversion from 'const double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Vector3.h(19,37): warning C4244: 'return': conversion from 'const double' to 'float', possible loss of data
 C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Camera.h(22,21): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Camera.h(41,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Main.cpp(93,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Main.cpp(94,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Main.cpp(95,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Main.cpp(186,15): warning C4129: 'D': unrecognized character escape sequence
-C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Main.cpp(163,11): warning C4101: 't': unreferenced local variable
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\RayTriangleIntercept.h(14,14): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\RayTriangleIntercept.h(19,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\RayTriangleIntercept.h(26,10): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\AABB.h(36,56): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\AABB.h(36,40): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\AABB.h(37,47): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\AABB.h(37,31): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\AABB.h(41,47): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\AABB.h(41,31): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\AABB.h(42,47): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\AABB.h(42,31): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Main.cpp(88,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Main.cpp(89,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Main.cpp(90,20): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Main.cpp(265,15): warning C4129: 'D': unrecognized character escape sequence
+C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\PathTracerCTP\Main.cpp(266,15): warning C4129: 'T': unrecognized character escape sequence
   PathTracerCTP.vcxproj -> C:\Users\alexf\Documents\BSc Games Technology\CTP\CTP_17016942\PathTracerCTP\x64\Debug\PathTracerCTP.exe
