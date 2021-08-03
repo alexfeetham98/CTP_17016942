@@ -2,6 +2,7 @@
 #include "Ray.h"
 #include "Hittable.h"
 #include "Utilities.h"
+#include "Texture.h"
 
 struct Hit_Record;
 
@@ -21,32 +22,30 @@ Vector3 refract(const Vector3& uv, const Vector3& n, double etai_over_etat)
 class Material
 {
 public:
+	virtual colour emitted(double u, double v, const point3& p) const {	return colour(0, 0, 0);	}
 	virtual bool scatter(const Ray& r_in, const Hit_Record& rec, colour& attenuation, Ray& scattered) const = 0;
 };
 
 class Lambertian : public Material
 {
 public:
-	Lambertian(const colour& a) : albedo(a) {}
+	Lambertian(const colour& a) : albedo(make_shared<solid_colour>(a)) {}
+	Lambertian(shared_ptr<Texture> a) : albedo(a) {}
 
 	virtual bool scatter(const Ray& r_in, const Hit_Record& rec, colour& attenuation, Ray& scattered) const override
 	{
-		/*auto scatter_direction = rec.normal + random_unit_vector();
+		auto scatter_direction = rec.normal + random_unit_vector();
 		if (scatter_direction.near_zero())
 		{
 			scatter_direction = rec.normal;
 		}			
-		scattered = Ray(rec.point, scatter_direction);
-		attenuation = albedo;
-		return true;*/
-		Vector3 target = rec.point + rec.normal + random_in_unit_sphere();
-		scattered = Ray(rec.point, target - rec.point, r_in.time());
-		attenuation = albedo;
+		scattered = Ray(rec.point, scatter_direction, r_in.time());
+		attenuation = albedo->value(rec.u, rec.v, rec.point);
 		return true;
 	}
 	
 public:
-	colour albedo;
+	shared_ptr<Texture> albedo;
 };
 
 class Metal : public Material {
@@ -104,4 +103,25 @@ private:
 		r0 = r0 * r0;
 		return r0 + (1 - r0) * pow((1 - cosine), 5);
 	}
+};
+
+
+class Diffuse_Light : public Material
+{
+public:
+	Diffuse_Light(shared_ptr<Texture> a) : emit(a) {}
+	Diffuse_Light(colour c) : emit(make_shared<solid_colour>(c)) {}
+
+	virtual bool scatter(const Ray& r_in, const Hit_Record& rec, colour& attenuation, Ray& scattered) const override
+	{
+		return false;
+	}
+
+	virtual colour emitted(double u, double v, const point3& p) const override
+	{
+		return emit->value(u, v, p);
+	}
+
+public:
+	shared_ptr<Texture> emit;
 };

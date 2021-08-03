@@ -52,7 +52,7 @@ inline bool Hittable_List::BoundingBox(double time0, double time1, AABB& output_
 
     for (const auto& object : objects) {
         if (!object->BoundingBox(time0, time1, temp_box)) return false;
-        output_box = first_box ? temp_box : SurroundingBox(output_box, temp_box);
+        output_box = first_box ? temp_box : temp_box.SurroundingBox(output_box, temp_box);
         first_box = false;
     }
 

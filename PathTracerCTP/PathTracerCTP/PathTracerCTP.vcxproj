@@ -152,21 +152,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AARect.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABB.h" />
+    <ClInclude Include="AARect.h" />
+    <ClInclude Include="Box.h" />
     <ClInclude Include="BVH.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Colour.h" />
+    <ClInclude Include="Perlin.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="Hittable.h" />
     <ClInclude Include="Hittable_List.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Ray.h" />
-    <ClInclude Include="RayTriangleIntercept.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Vector3.h" />

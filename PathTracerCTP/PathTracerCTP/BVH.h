@@ -89,7 +89,7 @@ BVH_Node::BVH_Node(const
         )
         std::cerr << "No bounding box in BVH_Node constructor.\n";
 
-    box = SurroundingBox(box_left, box_right);
+    box = box.SurroundingBox(box_left, box_right);
 }
 
 
